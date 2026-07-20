@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<!--
+  blocked.html - AI钓鱼检测系统拦截页面
+  当检测到高风险钓鱼网站时显示此页面
+  采用现代化设计，清晰的危险警告
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚠️ 危险网站 - 已拦截</title>
+  <style>
+    /* ================================================================
+       CSS变量定义 - 统一配色方案
+       ================================================================ */
+    :root {
+      --primary-blue: #1a73e8;
+      --danger-red: #ea4335;
+      --danger-red-dark: #c62828;
+      --warning-yellow: #fbbc04;
+      --safe-green: #34a853;
+      --bg-gradient-start: #fef2f2;
+      --bg-gradient-end: #fff5f5;
+      --card-bg: #ffffff;
+      --text-primary: #202124;
+      --text-secondary: #5f6368;
+      --text-danger: #b71c1c;
+      --border-color: #e8eaed;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 24px rgba(234,67,53,0.15);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ================================================================
+       基础样式重置
+       ================================================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei",
+                   sans-serif;
+      background: linear-gradient(160deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 50%, #fce4ec 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: var(--text-primary);
+    }
+
+    /* ================================================================
+       主卡片容器
+       ================================================================ */
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg), var(--shadow-sm);
+      padding: 40px 36px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ================================================================
+       警告盾牌图标
+       ================================================================ */
+    .shield-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 24px;
+      position: relative;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .shield-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ================================================================
+       标题和文字
+       ================================================================ */
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--danger-red);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* ================================================================
+       被拦截URL显示
+       ================================================================ */
+    .blocked-url {
+      background: #fafafa;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      word-break: break-all;
+      margin-bottom: 24px;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    }
+
+    .blocked-url strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* ================================================================
+       风险信息卡片
+       ================================================================ */
+    .risk-info {
+      background: #fff5f5;
+      border: 1px solid #ffcdd2;
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .risk-info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .risk-info-item + .risk-info-item {
+      border-top: 1px solid #ffcdd2;
+    }
+
+    .risk-label {
+      font-weight: 600;
+      color: var(--text-danger);
+      white-space: nowrap;
+      min-width: 70px;
+    }
+
+    .risk-value {
+      color: var(--text-secondary);
+    }
+
+    .risk-score-bar {
+      display: inline-block;
+      width: 120px;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      vertical-align: middle;
+      margin: 0 8px;
+    }
+
+    .risk-score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--warning-yellow), var(--danger-red));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    /* ================================================================
+       按钮组
+       ================================================================ */
+    .button-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn-safe {
+      background: var(--safe-green);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(52,168,83,0.3);
+    }
+    .btn-safe:hover {
+      background: #2e7d32;
+      box-shadow: 0 4px 12px rgba(52,168,83,0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-continue {
+      background: #fff;
+      color: var(--danger-red);
+      border: 2px solid var(--danger-red);
+    }
+    .btn-continue:hover {
+      background: #fff5f5;
+      transform: translateY(-1px);
+    }
+
+    .btn-detail {
+      background: transparent;
+      color: var(--primary-blue);
+      border: 1px solid var(--primary-blue);
+      font-size: 13px;
+      padding: 8px 18px;
+    }
+    .btn-detail:hover {
+      background: #e8f0fe;
+    }
+
+    /* ================================================================
+       详细报告区域（默认折叠）
+       ================================================================ */
+    .detail-section {
+      text-align: left;
+      margin-top: 8px;
+    }
+
+    .detail-content {
+      display: none;
+      background: #fafafa;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-top: 12px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .detail-content.open {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .detail-content h4 {
+      font-size: 14px;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-content h4:not(:first-child) {
+      margin-top: 16px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .detail-row span:first-child {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .detail-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 2px;
+    }
+
+    .detail-tag.danger {
+      background: #fce4ec;
+      color: var(--danger-red);
+    }
+    .detail-tag.warning {
+      background: #fff8e1;
+      color: #e65100;
+    }
+    .detail-tag.safe {
+      background: #e8f5e9;
+      color: var(--safe-green);
+    }
+
+    /* ================================================================
+       响应式设计
+       ================================================================ */
+    @media (max-width: 480px) {
+      .container {
+        padding: 28px 20px;
+      }
+      .title {
+        font-size: 22px;
+      }
+      .button-group {
+        flex-direction: column;
+      }
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .shield-icon {
+        width: 72px;
+        height: 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 警告盾牌图标 -->
+    <div class="shield-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <!-- 盾牌背景 -->
+        <path d="M50 5 L88 22 L88 52 C88 78 74 96 50 100 C26 96 12 78 12 52 L12 22 Z"
+              fill="#ea4335"/>
+        <!-- 内部边框 -->
+        <path d="M50 11 L82 26 L82 51 C82 74 70 90 50 93 C30 90 18 74 18 51 L18 26 Z"
+              fill="none" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+        <!-- 感叹号 -->
+        <text x="50" y="70" text-anchor="middle" font-size="50" font-weight="bold"
+              fill="#fff" font-family="Arial, sans-serif">!</text>
+      </svg>
+    </div>
+
+    <!-- 标题 -->
+    <h1 class="title">⚠️ 危险网站 - 已拦截</h1>
+    <p class="subtitle">
+      AI检测系统发现此网站存在高风险特征，可能是一个钓鱼网站。<br>
+      为保护您的信息安全，已自动拦截。
+    </p>
+
+    <!-- 被拦截的URL -->
+    <div class="blocked-url">
+      <strong>被拦截网站：</strong><br>
+      <span id="blocked-url-text">加载中...</span>
+    </div>
+
+    <!-- 风险信息 -->
+    <div class="risk-info" id="risk-info">
+      <div class="risk-info-item">
+        <span class="risk-label">风险等级：</span>
+        <span id="risk-level" class="detail-tag danger">高风险</span>
+      </div>
+      <div class="risk-info-item">
+        <span class="risk-label">风险评分：</span>
+        <span id="risk-score">--</span>
+        <span class="risk-score-bar">
+          <span class="risk-score-fill" id="risk-score-bar" style="width:0%"></span>
+        </span>
+      </div>
+      <div class="risk-info-item">
+        <span class="risk-label">检测时间：</span>
+        <span id="detect-time">--</span>
+      </div>
+    </div>
+
+    <!-- 按钮组 -->
+    <div class="button-group">
+      <button class="btn btn-safe" id="btn-go-back">
+        🏠 返回安全页面
+      </button>
+      <button class="btn btn-continue" id="btn-continue">
+        ⚡ 继续访问（不推荐）
+      </button>
+    </div>
+
+    <!-- 查看详细报告 -->
+    <div class="detail-section">
+      <button class="btn btn-detail" id="btn-toggle-detail">
+        📊 查看详细报告 ▼
+      </button>
+      <div class="detail-content" id="detail-content">
+        <h4>🔍 规则引擎检测</h4>
+        <div id="rule-engine-detail">
+          <div class="detail-row"><span>状态：</span> 加载中...</div>
+        </div>
+
+        <h4>🤖 AI模型检测</h4>
+        <div id="ai-detection-detail">
+          <div class="detail-row"><span>状态：</span> 加载中...</div>
+        </div>
+
+        <h4>🧬 URL CNN+BiLSTM</h4>
+        <div id="url-cnn-detail">
+          <div class="detail-row"><span>状态：</span> 加载中...</div>
+        </div>
+
+        <h4>📝 表单分析</h4>
+        <div id="form-analysis-detail">
+          <div class="detail-row"><span>状态：</span> 加载中...</div>
+        </div>
+
+        <h4>📋 检测详情</h4>
+        <div id="details-list">
+          <div class="detail-row"><span>状态：</span> 加载中...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页面逻辑 -->
+  <script src="blocked.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- 背景圆形 -->
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a73e8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d47a1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34a853;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1b5e20;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000033"/>
+    </filter>
+  </defs>
+
+  <!-- 盾牌主体 -->
+  <path d="M64 8 L118 28 L118 68 C118 98 96 120 64 128 C32 120 10 98 10 68 L10 28 Z"
+        fill="url(#shieldGrad)" stroke="#0d47a1" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- 盾牌内浅色区域 -->
+  <path d="M64 16 L108 34 L108 66 C108 92 88 112 64 118 C40 112 20 92 20 66 L20 34 Z"
+        fill="none" stroke="#ffffff44" stroke-width="1"/>
+
+  <!-- AI眼睛图标 - 外眼 -->
+  <ellipse cx="64" cy="58" rx="22" ry="16" fill="#ffffff" stroke="#1565c0" stroke-width="1.5"/>
+
+  <!-- AI眼睛图标 - 瞳孔 -->
+  <ellipse cx="64" cy="58" rx="12" ry="12" fill="url(#eyeGrad)"/>
+
+  <!-- AI眼睛图标 - 高光 -->
+  <ellipse cx="60" cy="53" rx="5" ry="4" fill="#ffffff" opacity="0.6"/>
+
+  <!-- AI芯片电路线 - 左侧 -->
+  <line x1="34" y1="75" x2="44" y2="75" stroke="#64b5f6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="34" y1="82" x2="48" y2="82" stroke="#64b5f6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="34" y1="89" x2="44" y2="89" stroke="#64b5f6" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- AI芯片电路线 - 右侧 -->
+  <line x1="94" y1="75" x2="84" y2="75" stroke="#64b5f6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="94" y1="82" x2="80" y2="82" stroke="#64b5f6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="94" y1="89" x2="84" y2="89" stroke="#64b5f6" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 底部勾号/对号 -->
+  <path d="M52 100 L60 108 L78 88" fill="none" stroke="#34a853" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 顶部AI文字 -->
+  <text x="64" y="122" text-anchor="middle" font-family="Arial, sans-serif" font-size="10"
+        font-weight="bold" fill="#a5d6a7" letter-spacing="2">AI</text>
+</svg>

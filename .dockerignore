@@ -1,0 +1,14 @@
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+*.md
+.vscode
+.idea
+logs/
+*.log
+extension/
+training/
+钓鱼网站URL数据集/
+.env

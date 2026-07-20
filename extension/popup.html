@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!--
+  popup.html - AI钓鱼检测系统弹窗界面
+  双模式UI：普通用户模式 / 专业用户模式
+  现代化设计，清晰直观
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI钓鱼检测</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- ================================================================
+       主容器
+       ================================================================ -->
+  <div class="popup-container">
+
+    <!-- ============================================================
+         顶部标题栏
+         ============================================================ -->
+    <header class="header">
+      <div class="header-logo">
+        <svg class="logo-icon" viewBox="0 0 32 32" width="28" height="28">
+          <path d="M16 2 L28 7 L28 18 C28 26 24 30 16 32 C8 30 4 26 4 18 L4 7 Z"
+                fill="#1a73e8"/>
+          <ellipse cx="16" cy="15" rx="7" ry="5" fill="#fff"/>
+          <ellipse cx="16" cy="15" rx="3.5" ry="3.5" fill="#34a853"/>
+          <ellipse cx="14.5" cy="13.5" rx="1.5" ry="1.2" fill="#fff" opacity="0.6"/>
+        </svg>
+        <div class="header-text">
+          <h1 class="header-title">AI钓鱼检测</h1>
+          <span class="header-subtitle" id="header-status">就绪</span>
+        </div>
+      </div>
+      <!-- 实时检测状态指示器 -->
+      <div class="status-indicator" id="status-indicator" title="实时检测状态">
+        <span class="status-dot"></span>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         手动检测区域
+         ============================================================ -->
+    <section class="detect-section">
+      <div class="input-group">
+        <input
+          type="text"
+          id="url-input"
+          class="url-input"
+          placeholder="输入网址进行检测..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="btn-detect" class="btn btn-primary" title="检测此URL">
+          <span class="btn-text">检测</span>
+          <span class="btn-loading hidden" id="btn-loading-spinner"></span>
+        </button>
+      </div>
+      <div class="input-error hidden" id="input-error"></div>
+    </section>
+
+    <!-- ============================================================
+         检测结果区域 - 普通用户模式
+         ============================================================ -->
+    <section class="result-section" id="result-normal" style="display:none;">
+      <div class="result-card" id="result-card">
+        <!-- 风险等级图标和文字 -->
+        <div class="risk-icon-large" id="risk-icon-large">
+          <span id="risk-icon-emoji">🔍</span>
+        </div>
+        <div class="risk-badge" id="risk-badge">--</div>
+        <p class="risk-description" id="risk-description"></p>
+        <!-- 简要信息 -->
+        <div class="risk-summary" id="risk-summary"></div>
+        <!-- 查看详情按钮 -->
+        <button class="btn btn-outline" id="btn-switch-expert">
+          📊 查看详情
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         检测结果区域 - 专业用户模式
+         ============================================================ -->
+    <section class="result-section" id="result-expert" style="display:none;">
+      <div class="expert-card">
+        <!-- 风险评分进度条 -->
+        <div class="score-section">
+          <div class="score-header">
+            <span class="score-label">风险评分</span>
+            <span class="score-value" id="expert-score-value">--</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="expert-progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- 规则引擎结果 -->
+        <div class="expert-block" id="expert-rule-engine">
+          <h4 class="expert-block-title">🔍 规则引擎</h4>
+          <div class="expert-block-content" id="expert-rule-content">--</div>
+        </div>
+
+        <!-- AI检测结果 -->
+        <div class="expert-block" id="expert-ai-detection">
+          <h4 class="expert-block-title">🤖 AI检测</h4>
+          <div class="expert-block-content" id="expert-ai-content">--</div>
+        </div>
+
+        <!-- URL CNN+BiLSTM模型结果 -->
+        <div class="expert-block" id="expert-url-cnn">
+          <h4 class="expert-block-title">🧬 URL CNN+BiLSTM</h4>
+          <div class="expert-block-content" id="expert-url-cnn-content">--</div>
+        </div>
+
+        <!-- 表单分析结果 -->
+        <div class="expert-block" id="expert-form-analysis">
+          <h4 class="expert-block-title">📝 表单分析</h4>
+          <div class="expert-block-content" id="expert-form-content">--</div>
+        </div>
+
+        <!-- 详细信息 -->
+        <div class="expert-block" id="expert-details">
+          <h4 class="expert-block-title">📋 检测详情</h4>
+          <div class="expert-block-content" id="expert-details-content">--</div>
+        </div>
+
+        <!-- 简化视图按钮 -->
+        <button class="btn btn-outline" id="btn-switch-normal">
+          📋 简化视图
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         加载状态
+         ============================================================ -->
+    <section class="loading-section hidden" id="loading-section">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">正在检测中...</p>
+    </section>
+
+    <!-- ============================================================
+         错误状态
+         ============================================================ -->
+    <section class="error-section hidden" id="error-section">
+      <div class="error-icon">⚠️</div>
+      <p class="error-text" id="error-text"></p>
+    </section>
+
+    <!-- ============================================================
+         历史记录区域
+         ============================================================ -->
+    <section class="history-section hidden" id="history-section">
+      <div class="history-header">
+        <h3 class="history-title">📜 检测历史</h3>
+        <button class="btn btn-small btn-text-only" id="btn-clear-history">清空</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <p class="history-empty">暂无检测记录</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         底部工具栏
+         ============================================================ -->
+    <footer class="footer">
+      <button class="toolbar-btn" id="btn-settings" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+        <span>设置</span>
+      </button>
+      <button class="toolbar-btn" id="btn-history" title="检测历史">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M13 3a9 9 0 00-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0013 21a9 9 0 000-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+        </svg>
+        <span>历史</span>
+      </button>
+      <button class="toolbar-btn" id="btn-mode-toggle" title="切换模式">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+        </svg>
+        <span id="btn-mode-text">专业模式</span>
+      </button>
+    </footer>
+  </div>
+
+  <!-- 弹窗逻辑 -->
+  <script src="popup.js"></script>
+</body>
+</html>

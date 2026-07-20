@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<!--
+  settings.html - AI钓鱼检测系统设置页面
+  独立打开的选项卡页面，包含设置项、连接测试、检测历史
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>检测设置 - AI钓鱼检测系统</title>
+  <style>
+    /* ================================================================
+       CSS变量
+       ================================================================ */
+    :root {
+      --primary: #1a73e8;
+      --primary-hover: #1557b0;
+      --primary-light: #e8f0fe;
+      --safe: #34a853;
+      --safe-light: #e6f4ea;
+      --warning: #fbbc04;
+      --warning-light: #fef7e0;
+      --danger: #ea4335;
+      --danger-light: #fce8e6;
+      --bg: #f5f5f5;
+      --bg-card: #ffffff;
+      --text-primary: #202124;
+      --text-secondary: #5f6368;
+      --text-muted: #9aa0a6;
+      --border: #dadce0;
+      --border-light: #e8eaed;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --transition: all 0.2s ease;
+    }
+
+    /* ================================================================
+       基础样式
+       ================================================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    /* ================================================================
+       页面容器
+       ================================================================ */
+    .settings-container {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ================================================================
+       页面标题
+       ================================================================ */
+    .page-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .page-header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .page-header .logo svg {
+      width: 40px;
+      height: 40px;
+      filter: drop-shadow(0 2px 4px rgba(26,115,232,0.3));
+    }
+
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .page-header .version {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ================================================================
+       设置卡片
+       ================================================================ */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-light);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ================================================================
+       设置项
+       ================================================================ */
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .setting-label span:first-child {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .setting-label span:last-child {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .setting-control {
+      flex-shrink: 0;
+      margin-left: 16px;
+    }
+
+    /* ================================================================
+       Toggle 开关
+       ================================================================ */
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #ccc;
+      border-radius: 26px;
+      transition: var(--transition);
+    }
+
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: var(--transition);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background: var(--primary);
+    }
+
+    .toggle input:checked + .toggle-slider::before {
+      transform: translateX(22px);
+    }
+
+    .toggle input:focus + .toggle-slider {
+      box-shadow: 0 0 0 3px rgba(26,115,232,0.2);
+    }
+
+    /* ================================================================
+       输入框
+       ================================================================ */
+    .text-input {
+      width: 220px;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--text-primary);
+      background: #fff;
+      outline: none;
+      transition: var(--transition);
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    }
+
+    .text-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+    }
+
+    /* ================================================================
+       按钮
+       ================================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(26,115,232,0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 10px rgba(26,115,232,0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary-light);
+    }
+
+    .btn-danger-text {
+      background: transparent;
+      color: var(--danger);
+      border: none;
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .btn-danger-text:hover {
+      background: var(--danger-light);
+    }
+
+    .btn-small {
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+
+    /* ================================================================
+       连接状态
+       ================================================================ */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ccc;
+      transition: var(--transition);
+    }
+
+    .status-dot.online {
+      background: var(--safe);
+      box-shadow: 0 0 8px rgba(52,168,83,0.5);
+    }
+
+    .status-dot.offline {
+      background: var(--danger);
+      box-shadow: 0 0 8px rgba(234,67,53,0.5);
+    }
+
+    .status-text {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .status-text.online { color: var(--safe); }
+    .status-text.offline { color: var(--danger); }
+
+    /* ================================================================
+       测试连接按钮行
+       ================================================================ */
+    .connection-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    /* ================================================================
+       历史列表
+       ================================================================ */
+    .history-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 24px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .history-item + .history-item {
+      border-top: 1px solid var(--border-light);
+    }
+
+    .history-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .history-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .history-url {
+      font-weight: 500;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .history-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .history-badge.safe { background: var(--safe-light); color: var(--safe); }
+    .history-badge.suspicious { background: var(--warning-light); color: #e65100; }
+    .history-badge.danger { background: var(--danger-light); color: var(--danger); }
+    .history-badge.unknown { background: var(--border-light); color: var(--text-secondary); }
+
+    .history-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .history-count {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ================================================================
+       关于信息
+       ================================================================ */
+    .about-info {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .about-info strong {
+      color: var(--text-primary);
+    }
+
+    .about-info .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tech-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* ================================================================
+       响应式
+       ================================================================ */
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+      .card {
+        padding: 16px;
+      }
+      .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .setting-control {
+        margin-left: 0;
+      }
+      .text-input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-container">
+    <!-- ============================================================
+         页面标题
+         ============================================================ -->
+    <div class="page-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" width="40" height="40">
+          <path d="M16 2 L28 7 L28 18 C28 26 24 30 16 32 C8 30 4 26 4 18 L4 7 Z"
+                fill="#1a73e8"/>
+          <ellipse cx="16" cy="15" rx="7" ry="5" fill="#fff"/>
+          <ellipse cx="16" cy="15" rx="3.5" ry="3.5" fill="#34a853"/>
+          <ellipse cx="14.5" cy="13.5" rx="1.5" ry="1.2" fill="#fff" opacity="0.6"/>
+        </svg>
+        <h1>AI钓鱼检测系统</h1>
+      </div>
+      <p class="version">版本 1.0.0 | 基于AI的实时钓鱼网站检测与防护</p>
+    </div>
+
+    <!-- ============================================================
+         检测设置
+         ============================================================ -->
+    <div class="card">
+      <div class="card-title">⚙️ 检测设置</div>
+
+      <!-- 用户模式 -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>专业模式</span>
+          <span>显示详细的技术检测结果，包括AI置信度、规则匹配等</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" id="toggle-expert-mode">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 实时检测 -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>实时检测</span>
+          <span>自动拦截和检测访问的网站，关闭后仅支持手动检测</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" id="toggle-realtime" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 后端地址 -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>后端服务地址</span>
+          <span>AI检测API服务器地址</span>
+        </div>
+        <div class="setting-control">
+          <input type="text" class="text-input" id="input-backend-url"
+                 value="http://127.0.0.1:5000" placeholder="http://127.0.0.1:5000">
+        </div>
+      </div>
+
+      <!-- 后端连接状态 -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>后端连接状态</span>
+          <span id="status-description">检查中...</span>
+        </div>
+        <div class="setting-control">
+          <div class="connection-status">
+            <span class="status-dot" id="status-dot"></span>
+            <span class="status-text" id="status-text">检查中...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 连接操作 -->
+      <div class="connection-actions">
+        <button class="btn btn-outline btn-small" id="btn-test-connection">
+          🔄 测试连接
+        </button>
+        <button class="btn btn-primary btn-small" id="btn-save-settings">
+          💾 保存设置
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         模型配置
+         ============================================================ -->
+    <div class="card">
+      <div class="card-title">🧠 模型配置</div>
+
+      <!-- URL CNN+BiLSTM -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>URL CNN+BiLSTM</span>
+          <span>Char-level CNN + Bi-LSTM URL分类模型，融合权重 0.40</span>
+        </div>
+        <div class="setting-control">
+          <div class="connection-status">
+            <span class="status-dot" id="url-cnn-status-dot"></span>
+            <span class="status-text" id="url-cnn-status-text">检测中</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 规则引擎 -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>规则引擎</span>
+          <span>基于规则的URL特征检测，融合权重 0.40</span>
+        </div>
+        <div class="setting-control">
+          <div class="connection-status">
+            <span class="status-dot online"></span>
+            <span class="status-text online">已启用</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 表单分析 -->
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>表单分析</span>
+          <span>页面表单敏感字段检测，敏感字段 +10 附加分</span>
+        </div>
+        <div class="setting-control">
+          <div class="connection-status">
+            <span class="status-dot online"></span>
+            <span class="status-text online">已启用</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         检测历史
+         ============================================================ -->
+    <div class="card">
+      <div class="card-title">📜 检测历史</div>
+      <div class="history-header-bar">
+        <span class="history-count" id="history-count">共 0 条记录</span>
+        <button class="btn btn-danger-text" id="btn-clear-history">🗑️ 清空历史</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <p class="history-empty">暂无检测记录</p>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         关于
+         ============================================================ -->
+    <div class="card">
+      <div class="card-title">ℹ️ 关于</div>
+      <div class="about-info">
+        <p><strong>AI钓鱼网站检测防护系统</strong> v1.0.0</p>
+        <p style="margin-top:8px;">
+          本系统采用AI深度学习技术，结合规则引擎和URL特征分析，
+          对访问的网站进行实时钓鱼检测，保护您的信息安全。
+        </p>
+        <div class="tech-tags">
+          <span class="tech-tag">Manifest V3</span>
+          <span class="tech-tag">Chrome Extension</span>
+          <span class="tech-tag">CNN深度学习</span>
+          <span class="tech-tag">URL分析</span>
+          <span class="tech-tag">规则引擎</span>
+          <span class="tech-tag">表单分析</span>
+        </div>
+        <p style="margin-top:12px;font-size:12px;color:var(--text-muted);">
+          © 2026 AI钓鱼检测团队 | 兼容 Chrome / Edge 浏览器
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 设置页面逻辑 -->
+  <script src="settings.js"></script>
+</body>
+</html>

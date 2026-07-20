@@ -1,0 +1,58 @@
+{
+  "manifest_version": 3,
+  "name": "AI钓鱼网站检测防护系统",
+  "version": "1.0.0",
+  "description": "基于AI的实时钓鱼网站检测与防护浏览器扩展，融合规则引擎、CNN深度学习和表单分析技术",
+  "author": "AI钓鱼检测团队",
+
+  "permissions": [
+    "webNavigation",
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AI钓鱼网站检测防护系统",
+    "default_icon": {
+      "16": "assets/icon.svg",
+      "48": "assets/icon.svg",
+      "128": "assets/icon.svg"
+    }
+  },
+
+  "icons": {
+    "16": "assets/icon.svg",
+    "48": "assets/icon.svg",
+    "128": "assets/icon.svg"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "blocked.html",
+        "blocked.js",
+        "assets/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ]
+}

